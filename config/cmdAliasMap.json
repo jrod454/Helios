@@ -1,0 +1,66 @@
+{
+  "award": {
+    "aliases": [
+      "award"
+    ]
+  },
+  "currency": {
+    "aliases": [
+      "cur",
+      "currency",
+      "bal",
+      "balance",
+      "bag"
+    ]
+  },
+  "take": {
+    "aliases": [
+      "take"
+    ]
+  },
+  "permissions": {
+    "aliases": [
+      "permissions",
+      "perm"
+    ],
+    "subCommands": [
+      "add",
+      "remove"
+    ]
+  },
+  "work": {
+    "aliases": [
+      "work",
+      "timely"
+    ]
+  },
+  "give": {
+    "aliases": [
+      "give"
+    ]
+  },
+  "leaderboard": {
+    "aliases": [
+      "leaderboard",
+      "lb"
+    ]
+  },
+  "schedule": {
+    "aliases": [
+      "schedule"
+    ],
+    "subCommands": [
+      "message",
+      "currency"
+    ]
+  },
+  "settings": {
+    "aliases": [
+      "settings"
+    ],
+    "subCommands": [
+      "refresh",
+      "set"
+    ]
+  }
+}
