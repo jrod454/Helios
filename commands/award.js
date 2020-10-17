@@ -1,6 +1,6 @@
 const Firestore = require('@google-cloud/firestore');
 const Discord = require("discord.js");
-const config = require("../config/discordConfig.json");
+const config = require("../discordConfig.json");
 const utils = require('../utils/utils');
 
 module.exports.execute = async (parsedMessage, message, database) => {

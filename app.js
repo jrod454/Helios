@@ -1,4 +1,4 @@
-const config = require("./config/discordConfig.json");
+const config = require("./discordConfig.json");
 const utils = require('./utils/utils');
 const cmdAliasMap = require('./config/cmdAliasMap.json');
 const parse = require("discord-command-parser");
