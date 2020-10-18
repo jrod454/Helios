@@ -1,5 +1,6 @@
 const utils = require('../utils/utils');
 const cmdAliasMap = require('../config/cmdAliasMap.json');
+const settings = require('../config/settings');
 
 module.exports.execute = async (parsedMessage, message, database) => {
     switch (parsedMessage.arguments.length) {
@@ -15,15 +16,18 @@ module.exports.execute = async (parsedMessage, message, database) => {
             }
             let userId = parsedMessage.reader.getUserID(true);
             let roleId = parsedMessage.reader.getRoleID(true);
+            console.log(roleId);
             if (userId === null && roleId === null) {
                 utils.sendMessage(message.channel.id, `The provided user/role is invalid\nArguments: ${parsedMessage.arguments}`);
                 break;
             }
 
+            let user = settings.client.users.cache.get(userId);
+            let role = message.guild.roles.cache.get(roleId);
+
             const channelPermissionsDoc = database.collection('permissions').doc('channels').collection(message.channel.id).doc(targetParentAlias);
             await channelPermissionsDoc.set({}, {merge: true});
-            if (userId !== null) {
-                let user = message.guild.members.cache.get(userId);
+            if (user !== undefined) {
                 await database.runTransaction(async (t) => {
                     let doc = await t.get(channelPermissionsDoc);
                     let users = doc.data().users;
@@ -46,8 +50,7 @@ module.exports.execute = async (parsedMessage, message, database) => {
                     }
                 });
                 message.channel.send(utils.createSuccessEmbed(`Adjusted permissions of ${user} to the the ${targetParentAlias} command.`));
-            } else if (roleId !== null) {
-                let role = message.guild.roles.cache.get(roleId);
+            } else if (role !== undefined) {
                 await database.runTransaction(async (t) => {
                     let doc = await t.get(channelPermissionsDoc);
                     let roles = doc.data().roles;
