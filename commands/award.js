@@ -17,12 +17,12 @@ module.exports.execute = async (parsedMessage, message, database) => {
 
                 if (userId !== null) {
                     let user = message.guild.members.cache.get(userId);
-                    utils.addCurrencyToUser(userId, amount, true, message, database).then(() => {
+                    utils.addCurrencyToUser(userId, amount, true, message.channel.id, message.guild.id).then(() => {
                         utils.sendMessage(message.channel.id, `Awarded ${amount} to ${user}.`);
                     });
                 } else if (roleId !== null) {
                     let role = message.guild.roles.cache.get(roleId);
-                    utils.addCurrencyToRole(roleId, amount, true, message, database).then(() => {
+                    utils.addCurrencyToRole(roleId, amount, true, message.channel.id, message.guild.id).then(() => {
                         utils.sendMessage(message.channel.id, `Awarded ${amount} to ${role}.`);
                     });
                 }
