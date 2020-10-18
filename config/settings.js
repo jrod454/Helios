@@ -19,14 +19,15 @@ module.exports.client = client;
 const defaults = require('./serverDefaultSettings.json');
 const utils = require('../utils/utils');
 
-let serverSettings = new Map();
+let serverSettings = {};
 
 module.exports.init = async () => {
-    const serverDocs = await this.db.collection('servers').get();
-    serverSettings = new Map();
-    serverDocs.docs.forEach(doc => {
-        serverSettings.set(doc.id, doc.data());
-    });
+    const serverSettingsDoc = this.db.collection('server').doc('settings');
+    serverSettings = (await serverSettingsDoc.get()).data();
+    if (serverSettings === undefined) {
+        await serverSettingsDoc.set({}, {merge: true})
+        serverSettings = {};
+    }
     console.log(serverSettings);
 };
 
@@ -37,7 +38,7 @@ module.exports.execute = async (parsedMessage, message, database) => {
                 await this.init();
                 utils.sendMessage(message.channel.id, `Refreshed settings`);
             } else if (parsedMessage.arguments[0] === "list") {
-                listSettings(message.guild.id, message.channel.id);
+                listSettings(message.channel.id);
             } else {
                 throw `Invalid settings command`;
             }
@@ -54,6 +55,13 @@ module.exports.execute = async (parsedMessage, message, database) => {
                     } else {
                         throw `Unable to read channel id`;
                     }
+                } else if (variableName === "botDmCategoryId") {
+                    let parsedChannelId = parsedMessage.reader.getChannelID();
+                    if (parsedChannelId !== null) {
+                        await this.setDmCategoryId(parsedChannelId);
+                    } else {
+                        throw `Unable to read channel id`;
+                    }
                 } else {
                     throw `Unknown settings sub command`;
                 }
@@ -66,17 +74,14 @@ module.exports.execute = async (parsedMessage, message, database) => {
     }
 };
 
-listSettings = (guildId, channelId) => {
+listSettings = (channelId) => {
     let output = `Settings:\n`;
     let totalSettings = new Map();
     for (let [key, value] of Object.entries(defaults)) {
         totalSettings.set(key, value);
     }
-    let sets = serverSettings.get(guildId);
-    if (sets !== undefined) {
-        for (let [key, value] of Object.entries(sets)) {
-            totalSettings.set(key, value);
-        }
+    for (let [key, value] of Object.entries(serverSettings)) {
+        totalSettings.set(key, value);
     }
     totalSettings.forEach((value, key) => {
         output += `${key}: ${value}\n`;
@@ -84,50 +89,36 @@ listSettings = (guildId, channelId) => {
     utils.sendMessage(channelId, output);
 };
 
-module.exports.getWorkPayout = async (message) => {
-    const serverDoc = this.db.collection('servers').doc(message.guild.id);
-    if (serverSettings.has(message.guild.id)) {
-        let guildInfo = serverSettings.get(message.guild.id);
-        if (guildInfo.workPayout !== undefined) {
-            return guildInfo.workPayout;
-        } else {
-            await serverDoc.update({workPayout: defaults.workPayout});
-            await this.init();
-            return defaults.workPayout;
-        }
-    } else {
-        await serverDoc.set({workPayout: defaults.workPayout}, {merge: true});
-        await this.init();
+module.exports.getWorkPayout = () => {
+    if (serverSettings.workPayout === undefined) {
         return defaults.workPayout;
+    } else {
+        return serverSettings.workPayout;
     }
 };
 
-module.exports.getWorkInterval = async (message) => {
-    const serverDoc = this.db.collection('servers').doc(message.guild.id);
-    if (serverSettings.has(message.guild.id)) {
-        let guildInfo = serverSettings.get(message.guild.id);
-        if (guildInfo.workInterval !== undefined) {
-            return guildInfo.workInterval;
-        } else {
-            await serverDoc.update({workInterval: defaults.workInterval});
-            await this.init();
-            return defaults.workInterval;
-        }
-    } else {
-        await serverDoc.set({workInterval: defaults.workInterval}, {merge: true});
-        await this.init();
+module.exports.getWorkInterval = () => {
+    if (serverSettings.workInterval === undefined) {
         return defaults.workInterval;
-    }
-};
-
-module.exports.hasLogChannel = (guildId) => {
-    if (serverSettings.has(guildId)) {
-        return serverSettings.get(guildId).logChannelId !== undefined;
     } else {
-        return false;
+        return serverSettings.workInterval;
     }
 };
 
-module.exports.getLogChannel = (guildId) => {
-    return serverSettings.get(guildId).logChannelId;
+module.exports.hasLogChannel = () => {
+    return serverSettings.logChannelId !== undefined;
+};
+
+module.exports.getLogChannel = () => {
+    return serverSettings.logChannelId;
+};
+
+module.exports.getDmCategoryId = () => {
+    return serverSettings.botDmCategoryId;
+};
+
+module.exports.setDmCategoryId = async (categoryId) => {
+    const serverSettingsDoc = this.db.collection('server').doc('settings');
+    await serverSettingsDoc.update({botDmCategoryId: categoryId});
+    serverSettings.botDmCategoryId = categoryId;
 };

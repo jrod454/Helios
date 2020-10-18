@@ -166,6 +166,10 @@ module.exports.sendMessage = (channelId, text) => {
     settings.client.channels.cache.get(channelId).send(new Discord.MessageEmbed().setDescription(text));
 };
 
+module.exports.sendMessage = (channelId, text, attachments) => {
+    settings.client.channels.cache.get(channelId).send({embed: new Discord.MessageEmbed().setDescription(text), files: attachments});
+};
+
 module.exports.getUsersCurrency = async (userId) => {
     const userDoc = settings.db.collection('users').doc(userId);
     await userDoc.set({}, {merge: true});
