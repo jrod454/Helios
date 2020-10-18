@@ -15,7 +15,9 @@ const lbCmd = require('./commands/leaderboard');
 const scheduleCmd = require('./commands/schedule');
 
 settings.client.on("message", async function (message) {
-    console.log(message.content);
+    if (message.embeds.length === 0) {
+        console.log(message.content);
+    }
     let parsedMessage = parse.parse(message, "$");
     let commandMap = new Map();
     commandMap.set("award", awardCmd);
@@ -43,6 +45,8 @@ settings.client.on("message", async function (message) {
 
 settings.client.on("ready", async () => {
     await settings.init();
+    await scheduleCmd.init();
+    console.log(settings.client);
 });
 
 settings.client.login(config.BOT_TOKEN);

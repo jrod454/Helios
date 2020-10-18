@@ -43,10 +43,10 @@ module.exports.createSuccessEmbed = (text) => {
         .setDescription(text);
 };
 
-module.exports.addCurrencyToUser = async (userId, amount, shouldReplyTo, message, database) => {
-    const userDoc = database.collection('users').doc(userId);
+module.exports.addCurrencyToUser = async (userId, amount, shouldReplyTo, channelId, guildId) => {
+    const userDoc = settings.db.collection('users').doc(userId);
     await userDoc.set({}, {merge: true});
-    await database.runTransaction(async (t) => {
+    await settings.db.runTransaction(async (t) => {
         let doc = await t.get(userDoc);
         let currentCurrency = doc.data().currency;
         let newCurrencyValue = amount;
@@ -54,25 +54,25 @@ module.exports.addCurrencyToUser = async (userId, amount, shouldReplyTo, message
             newCurrencyValue = currentCurrency + amount;
         }
         if (newCurrencyValue > 1000000000000) {
-            let errorText = `Total currency for ${message.guild.members.cache.get(userId)} cannot exceed 1,000,000,000,000\nArguments: ${arguments}`;
+            let errorText = `Total currency for ${settings.client.users.cache.get(userId)} cannot exceed 1,000,000,000,000\nArguments: ${arguments}`;
             if (shouldReplyTo) {
-                this.sendMessage(errorText, message.channel.id)
+                this.sendMessage(errorText, channelId)
             }
-            this.logMessage(message.guild.id, errorText);
+            this.logMessage(guildId, errorText);
         } else {
             t.update(userDoc, {currency: newCurrencyValue});
         }
     });
 };
 
-module.exports.addCurrencyToRole = async (roleId, amount, shouldReplyTo, message, database) => {
-    let role = message.guild.roles.cache.get(roleId);
+module.exports.addCurrencyToRole = async (roleId, amount, shouldReplyTo, channelId, guildId) => {
+    let role = settings.client.guilds.cache.get(guildId).roles.cache.get(roleId);
     if (role !== undefined) {
         role.members.forEach((value) => {
-            this.addCurrencyToUser(value.id, amount, shouldReplyTo, message, database);
+            this.addCurrencyToUser(value.id, amount, shouldReplyTo, channelId, guildId);
         });
     } else {
-        this.logMessage(message.guild.id, `Unable to find role: ${roleId}`);
+        this.logMessage(guildId, `Unable to find role: ${roleId}`);
     }
 };
 

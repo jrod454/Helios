@@ -1,9 +1,49 @@
 const utils = require('../utils/utils');
 const schedule = require('node-schedule');
+const settings = require('../config/settings');
 
 let allCurrencySchedules = new Map();
 module.exports.execute = async (parsedMessage, message, database) => {
     switch (parsedMessage.arguments.length) {
+        case 2:
+            let subSubCommand = parsedMessage.reader.getString();
+            switch (subSubCommand) {
+                case "list":
+                    let schedules = await settings.db.collection("servers").doc(message.guild.id).collection("schedules").get();
+                    let outputString = "";
+                    schedules.docs.forEach(doc => {
+                        outputString += `id: ${doc.id}\n`;
+                        if (doc.data().userId !== null) {
+                            outputString += `user: ${settings.client.users.cache.get(doc.data().userId)}\n`;
+                        }
+                        if (doc.data().roleId !== null) {
+                            outputString += `role: ${settings.client.guilds.cache.get(message.guild.id).roles.cache.get(doc.data().roleId)}\n`;
+                        }
+                        outputString += `amount: ${doc.data().amount}\n`;
+                        outputString += `cron: ${doc.data().cron}\n`;
+                        outputString += `\n`;
+                    });
+                    utils.sendMessage(message.channel.id, outputString);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case 3:
+            let case3Command = parsedMessage.reader.getString();
+            if (case3Command === "remove") {
+                let scheduleId = parsedMessage.reader.getString();
+                let s = allCurrencySchedules.get(scheduleId);
+                if (s !== undefined) {
+                    s.cancel();
+                }
+                allCurrencySchedules.delete(scheduleId);
+                await settings.db.collection("servers").doc(message.guild.id).collection("schedules").doc(scheduleId).delete();
+                utils.sendMessage(message.channel.id, `Removed currency schedule ${scheduleId}`);
+            } else {
+                throw `Schedule-currency: Unknown command`;
+            }
+            break;
         case 4:
             let amount = utils.parseCurrencyAmount(parsedMessage.reader.getString());
             if (amount !== null) {
@@ -13,37 +53,62 @@ module.exports.execute = async (parsedMessage, message, database) => {
                     throw `The provided user/role is invalid\nArguments: ${parsedMessage.arguments}`;
                 }
                 parsedMessage.reader.seek();
-                let scheduleString = parsedMessage.reader.getString();
-                console.log(scheduleString);
-                let scheduleObject = parseSchedule(scheduleString);
-                console.log(scheduleObject);
+                let cronString = parsedMessage.reader.getString();
 
-                let s = null;
-                if (userId !== null) {
-                    let user = message.guild.members.cache.get(userId);
-                    s = new schedule.scheduleJob(scheduleObject.rule, () => {
-                        utils.addCurrencyToUser(userId, amount, false, message, database).then(() => {
-                            utils.sendMessage(message.channel.id, `Sent scheduled payout of ${amount} to ${user}.`);
-                        });
-                    });
-                } else if (roleId !== null) {
-                    let role = message.guild.roles.cache.get(roleId);
-                    s = new schedule.scheduleJob(scheduleObject.rule, () => {
-                        utils.addCurrencyToRole(roleId, amount, false, message, database).then(() => {
-                            utils.sendMessage(message.channel.id, `Sent scheduled payout of ${amount} to ${role}.`);
-                        });
-                    });
-                }
+                let s = createCurrencySchedule(userId, roleId, cronString, amount, message.guild.id);
                 let storageResult = await database.collection("servers").doc(message.guild.id).collection("schedules").add({
                     type: "currency",
-                    rule: scheduleObject.input
+                    userId: userId,
+                    roleId: roleId,
+                    cron: cronString,
+                    amount: amount
                 });
-                allCurrencySchedules.set(storageResult.id, scheduleObject);
+                allCurrencySchedules.set(storageResult.id, s);
             }
             break;
         default:
             throw `Schedule-currency: Unknown command`;
     }
+};
+
+module.exports.init = async () => {
+    let servers = await settings.db.collection("servers").get();
+    allCurrencySchedules.forEach((k, v) => {
+        v.cancel();
+    });
+    allCurrencySchedules = new Map();
+    for (let doc of servers.docs) {
+        let schedules = await doc.ref.collection("schedules").get();
+        schedules.docs.forEach(sDoc => {
+            console.log(sDoc.data());
+            if (sDoc.data().userId === null && sDoc.data().roleId === null) {
+                sDoc.ref.delete();
+            } else {
+                let s = createCurrencySchedule(sDoc.data().userId, sDoc.data().roleId, sDoc.data().cron, sDoc.data().amount, doc.id);
+                allCurrencySchedules.set(sDoc.id, s);
+            }
+        });
+    }
+};
+
+createCurrencySchedule = (userId, roleId, cronString, amount, guildId) => {
+    let s = null;
+    if (userId !== null) {
+        let user = settings.client.users.cache.get(userId);
+        s = new schedule.scheduleJob(cronString, () => {
+            utils.addCurrencyToUser(userId, amount, false, null, guildId).then(() => {
+                utils.logMessage(guildId, `Sent scheduled payout of ${amount} to ${user}.`);
+            });
+        });
+    } else if (roleId !== null) {
+        let role = settings.client.guilds.cache.get(guildId).roles.cache.get(roleId);
+        s = new schedule.scheduleJob(cronString, () => {
+            utils.addCurrencyToRole(roleId, amount, false, null, guildId).then(() => {
+                utils.logMessage(guildId, `Sent scheduled payout of ${amount} to ${role}.`);
+            });
+        });
+    }
+    return s;
 };
 
 parseSchedule = (scheduleString) => {
