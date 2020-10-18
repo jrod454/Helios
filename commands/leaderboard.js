@@ -13,14 +13,14 @@ module.exports.execute = async (parsedMessage, message, database) => {
     allData.sort((a, b) => {
         return b.currency - a.currency;
     });
+
+    allData = allData.slice(0, 50);
     console.log(allData);
 
     let finalText = "";
     allData.forEach(value => {
         let user = utils.getUser(value.id, message);
-        if (user === undefined) {
-            finalText += `${value.id}: ${value.currency}\n`
-        } else {
+        if (user !== undefined) {
             finalText += `${user}: ${value.currency}\n`;
         }
     });
