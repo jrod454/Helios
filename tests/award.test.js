@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const Firestore = require('@google-cloud/firestore');
 const db = new Firestore({
     projectId: 'sofia-1b7ee',
-    keyFilename: 'sofia-1b7ee-4f5cc376d00a.json',
+    keyFilename: 'sofia-1b7ee.json',
 });
 
 const awardCmd = require('../commands/award');
