@@ -1,5 +1,5 @@
 {
-  "prefix": "$",
+  "prefix": ".",
   "workInterval": 3600000,
   "workPayout": 100,
   "maxCurrency": 1000000000000
