@@ -4,6 +4,7 @@ const cmdAliasMap = require('./config/cmdAliasMap.json');
 const parse = require("discord-command-parser");
 
 const settings = require('./config/settings');
+const defaults = require('./serverDefaultSettings.json');
 
 const awardCmd = require('./commands/award');
 const curCmd = require('./commands/currency');
@@ -18,7 +19,7 @@ settings.client.on("message", async function (message) {
     if (message.embeds.length === 0) {
         console.log(message.content);
     }
-    let parsedMessage = parse.parse(message, "$");
+    let parsedMessage = parse.parse(message, defaults.prefix);
     let commandMap = new Map();
     commandMap.set("award", awardCmd);
     commandMap.set("currency", curCmd);
