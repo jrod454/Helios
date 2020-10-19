@@ -2,5 +2,6 @@
   "prefix": ".",
   "workInterval": 3600000,
   "workPayout": 100,
-  "maxCurrency": 1000000000000
+  "maxCurrency": 1000000000000,
+  "maxBet": 500
 }

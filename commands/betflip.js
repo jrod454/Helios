@@ -14,7 +14,7 @@ module.exports.execute = async (parsedMessage, message) => {
                 let doc = await t.get(userDoc);
                 let currentCurrency = doc.data().currency;
                 if (currentCurrency === undefined || currentCurrency < amount) {
-                    throw `BetRoll: You do not have enough currency to bet that much`;
+                    throw `BetFlip: You do not have enough currency to bet that much`;
                 }
                 let betMultiplier = getBetMultiplier();
                 let newCurrency = 0;
@@ -28,26 +28,22 @@ module.exports.execute = async (parsedMessage, message) => {
                 }
                 await t.update(userDoc, {currency: newCurrency});
                 if (betMultiplier !== 0) {
-                    utils.sendMessage(message.channel.id, `BetRoll: Congratulations ${message.author}! You won ${amount * betMultiplier}!\nNew total: ${newCurrency}`);
+                    utils.sendMessage(message.channel.id, `BetFlip: Congratulations ${message.author}! You won ${amount * betMultiplier}!\nNew total: ${newCurrency}`);
                 } else {
-                    utils.sendMessage(message.channel.id, `BetRoll: You lost ${message.author}.\nNew total: ${newCurrency}`);
+                    utils.sendMessage(message.channel.id, `BetFlip: You lost ${message.author}.\nNew total: ${newCurrency}`);
                 }
             });
         } else {
-            throw `BetRoll: Invalid number`;
+            throw `BetFlip: Invalid number`;
         }
     } else {
-        throw `BetRoll: Wrong number of arguments`;
+        throw `BetFlip: Wrong number of arguments`;
     }
 };
 
 getBetMultiplier = () => {
-    let roll = Math.floor((Math.random() * 100) + 1);
-    if (roll === 100) {
-        return 10;
-    } else if (roll >= 90) {
-        return 4;
-    } else if (roll >= 66) {
+    let roll = Math.floor((Math.random() * 2) + 1);
+    if (roll === 1) {
         return 2;
     } else {
         return 0;

@@ -19,6 +19,7 @@ const giveCmd = require('./commands/give');
 const lbCmd = require('./commands/leaderboard');
 const scheduleCmd = require('./commands/schedule');
 const brCmd = require('./commands/betroll');
+const bfCmd = require('./commands/betflip');
 
 settings.client.on("message", async function (message) {
     try {
@@ -46,6 +47,7 @@ settings.client.on("message", async function (message) {
                 commandMap.set("schedule", scheduleCmd);
                 commandMap.set("settings", settings);
                 commandMap.set("betroll", brCmd);
+                commandMap.set("betflip", bfCmd);
 
                 let commandParentAlias = utils.getParentAlias(parsedMessage.command);
                 if (commandParentAlias !== undefined) {

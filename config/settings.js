@@ -130,3 +130,11 @@ module.exports.getMaxCurrency = () => {
         return serverSettings.maxCurrency;
     }
 };
+
+module.exports.getMaxBet = () => {
+    if (serverSettings.maxBet === undefined) {
+        return defaults.maxBet;
+    } else {
+        return serverSettings.maxBet;
+    }
+};
