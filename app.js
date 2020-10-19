@@ -18,12 +18,14 @@ const workCmd = require('./commands/work');
 const giveCmd = require('./commands/give');
 const lbCmd = require('./commands/leaderboard');
 const scheduleCmd = require('./commands/schedule');
+const brCmd = require('./commands/betroll');
 
 settings.client.on("message", async function (message) {
     try {
         if (message.author.id === settings.client.user.id) {
             //We ignore messages from the bot
         } else if (message.guild === null) {
+            console.log(message);
             await directMessage.handle(message);
         } else if (message.channel.parentID === settings.getDmCategoryId()) {
             await directMessage.send(message);
@@ -43,6 +45,7 @@ settings.client.on("message", async function (message) {
                 commandMap.set("leaderboard", lbCmd);
                 commandMap.set("schedule", scheduleCmd);
                 commandMap.set("settings", settings);
+                commandMap.set("betroll", brCmd);
 
                 let commandParentAlias = utils.getParentAlias(parsedMessage.command);
                 if (commandParentAlias !== undefined) {

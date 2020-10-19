@@ -63,5 +63,11 @@
       "refresh",
       "set"
     ]
+  },
+  "betroll": {
+    "aliases": [
+      "betroll",
+      "br"
+    ]
   }
 }

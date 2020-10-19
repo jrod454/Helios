@@ -122,3 +122,11 @@ module.exports.setDmCategoryId = async (categoryId) => {
     await serverSettingsDoc.update({botDmCategoryId: categoryId});
     serverSettings.botDmCategoryId = categoryId;
 };
+
+module.exports.getMaxCurrency = () => {
+    if (serverSettings.maxCurrency === undefined) {
+        return defaults.maxCurrency;
+    } else {
+        return serverSettings.maxCurrency;
+    }
+};
