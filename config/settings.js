@@ -50,8 +50,7 @@ module.exports.execute = async (parsedMessage, message, database) => {
                 if (variableName === "logChannelId") {
                     let parsedChannelId = parsedMessage.reader.getChannelID();
                     if (parsedChannelId !== null) {
-                        await this.db.collection('servers').doc(message.guildID).update({logChannelId: parsedChannelId});
-                        await this.init();
+                        await this.setLogChannelId(parsedChannelId);
                     } else {
                         throw `Unable to read channel id`;
                     }
@@ -109,8 +108,14 @@ module.exports.hasLogChannel = () => {
     return serverSettings.logChannelId !== undefined;
 };
 
-module.exports.getLogChannel = () => {
+module.exports.getLogChannelId = () => {
     return serverSettings.logChannelId;
+};
+
+module.exports.setLogChannelId = async (logChannelId) => {
+    const serverSettingsDoc = this.db.collection('server').doc('settings');
+    await serverSettingsDoc.update({logChannelId: logChannelId});
+    serverSettings.logChannelId = logChannelId;
 };
 
 module.exports.getDmCategoryId = () => {

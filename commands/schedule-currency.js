@@ -56,7 +56,9 @@ module.exports.execute = async (parsedMessage, message, database) => {
                 let cronString = parsedMessage.reader.getString();
 
                 let s = createCurrencySchedule(userId, roleId, cronString, amount, message.guild.id);
-                let storageResult = await database.collection("servers").doc(message.guild.id).collection("schedules").add({
+                let serverDoc = database.collection("servers").doc(message.guild.id);
+                await serverDoc.set({}, {merge: true});
+                let storageResult = await serverDoc.collection("schedules").add({
                     type: "currency",
                     userId: userId,
                     roleId: roleId,

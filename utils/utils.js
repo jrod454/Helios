@@ -156,7 +156,7 @@ module.exports.parseCurrencyAmount = (amountString) => {
 };
 
 module.exports.logMessage = (guildId, text) => {
-    let logChannelId = settings.getLogChannel(guildId);
+    let logChannelId = settings.getLogChannelId(guildId);
     if (logChannelId !== undefined) {
         settings.client.channels.cache.get(logChannelId).send(new Discord.MessageEmbed().setDescription(text));
     }
