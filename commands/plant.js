@@ -71,8 +71,7 @@ module.exports.execute = async (parsedMessage, message) => {
 
 createPlantEmbed = (user, amount, pickText, databaseId) => {
     let embed = new Discord.MessageEmbed();
-    embed.setTitle(`:simpbucks: ${amount} has been planted! :simpbucks:`);
-    embed.setDescription(`Use this command to pick it up!\n\`\`\`.pick ${pickText}\`\`\`\nPlanted by ${user}, PlantId: ${databaseId}\n`);
+    embed.setDescription(`:simpbucks: ${amount} has been planted! :simpbucks:\nUse this command to pick it up!\n\`\`\`.pick ${pickText}\`\`\`\nPlanted by ${user}, PlantId: ${databaseId}\n`);
     embed.setThumbnail("https://imgur.com/cpV5wcH.png");
     return embed;
 };
