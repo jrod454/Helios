@@ -26,6 +26,21 @@ module.exports.execute = async (parsedMessage, message, database) => {
                 throw `Permissions: Unknown sub command`;
             }
             break;
+        case 4:
+            let subCmd4 = parsedMessage.reader.getString();
+            let targetCmd4 = parsedMessage.reader.getString();
+            let userId4 = parsedMessage.reader.getUserID(true);
+            let roleId4 = parsedMessage.reader.getRoleID(true);
+            parsedMessage.reader.seek();
+            let targetChannel = parsedMessage.reader.getChannelID(true);
+            if (subCmd4 === "add") {
+                await addPermission(userId4, roleId4, message.guild.id, targetCmd4, targetChannel);
+            } else if (subCmd4 === "remove") {
+                await removePermission(userId4, roleId4, message.guild.id, targetCmd4, targetChannel);
+            } else {
+                throw `Permissions: Unknown sub command`;
+            }
+            break;
         default:
             throw `Permissions: Wrong number of arguments for a permissions command`;
     }
