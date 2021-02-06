@@ -1,5 +1,5 @@
 const config = require("./discordConfig.json");
-//Used for testing
+// Used for testing
 // const config = require("./discordConfigHelios.json");
 const utils = require('./utils/utils');
 const cmdAliasMap = require('./config/cmdAliasMap.json');
@@ -20,6 +20,8 @@ const lbCmd = require('./commands/leaderboard');
 const scheduleCmd = require('./commands/schedule');
 const brCmd = require('./commands/betroll');
 const bfCmd = require('./commands/betflip');
+const plantCmd = require('./commands/plant');
+const pickCmd = require('./commands/pick');
 
 settings.client.on("message", async function (message) {
     try {
@@ -48,6 +50,8 @@ settings.client.on("message", async function (message) {
                 commandMap.set("settings", settings);
                 commandMap.set("betroll", brCmd);
                 commandMap.set("betflip", bfCmd);
+                commandMap.set("plant", plantCmd);
+                commandMap.set("pick", pickCmd);
 
                 let commandParentAlias = utils.getParentAlias(parsedMessage.command);
                 if (commandParentAlias !== undefined) {

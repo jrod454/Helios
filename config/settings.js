@@ -4,7 +4,7 @@ const db = new Firestore({
     keyFilename: 'sofia-1b7ee.json',
 });
 
-//Used for testing
+// Used for testing
 // const db = new Firestore({
 //     projectId: 'helios-6fbe5',
 //     keyFilename: 'helios-6fbe5.json',

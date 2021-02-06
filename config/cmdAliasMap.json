@@ -76,5 +76,16 @@
       "flip",
       "bf"
     ]
+  },
+  "plant": {
+    "aliases": [
+      "plant",
+      "pl"
+    ]
+  },
+  "pick": {
+    "aliases": [
+      "pick"
+    ]
   }
 }
