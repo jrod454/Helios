@@ -13,12 +13,13 @@ const db = new Firestore({
 module.exports.db = db;
 
 const Discord = require("discord.js");
-const client = new Discord.Client();
+const myIntents = new Discord.IntentsBitField(3276799);
+const client = new Discord.Client({intents: myIntents});
 module.exports.client = client;
 
 const defaults = require('./serverDefaultSettings.json');
 const utils = require('../utils/utils');
-
+const {IntentsBitField} = require("discord.js");
 let serverSettings = {};
 
 module.exports.init = async () => {
