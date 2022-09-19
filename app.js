@@ -23,7 +23,7 @@ const bfCmd = require('./commands/betflip');
 const plantCmd = require('./commands/plant');
 const pickCmd = require('./commands/pick');
 
-settings.client.on("message", async function (message) {
+settings.client.on("messageCreate", async function (message) {
     try {
         if (message.author.id === settings.client.user.id) {
             //We ignore messages from the bot

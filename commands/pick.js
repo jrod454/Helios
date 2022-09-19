@@ -39,8 +39,8 @@ module.exports.execute = async (parsedMessage, message) => {
 };
 
 createPickSuccessEmbed = (user, amount, userTotalCurrency, passphrase, databaseId) => {
-    let embed = new Discord.MessageEmbed();
-    embed.setDescription(`${user} has successfully picked **${amount}**!\nTheir new currency total is **${userTotalCurrency}**.\nThe passphrase was: **${passphrase}**\nPlantId: ${databaseId}\n`);
-    embed.setThumbnail("https://imgur.com/cpV5wcH.png");
+    let embed = new Discord.EmbedBuilder()
+        .setDescription(`${user} has successfully picked **${amount}**!\nTheir new currency total is **${userTotalCurrency}**.\nThe passphrase was: **${passphrase}**\nPlantId: ${databaseId}\n`)
+        .setThumbnail("https://imgur.com/cpV5wcH.png");
     return embed;
 };

@@ -32,13 +32,13 @@ module.exports.getRole = (possibleRoleString, message) => {
 };
 
 module.exports.createErrorEmbed = (text) => {
-    return new Discord.MessageEmbed()
+    return new Discord.EmbedBuilder()
         .setTitle('Invalid Command')
         .setDescription(text);
 }
 
 module.exports.createSuccessEmbed = (text) => {
-    return new Discord.MessageEmbed()
+    return new Discord.EmbedBuilder()
         .setTitle('Success!')
         .setDescription(text);
 };
@@ -158,16 +158,16 @@ module.exports.parseCurrencyAmount = (amountString) => {
 module.exports.logMessage = (guildId, text) => {
     let logChannelId = settings.getLogChannelId(guildId);
     if (logChannelId !== undefined) {
-        settings.client.channels.cache.get(logChannelId).send(new Discord.MessageEmbed().setDescription(text));
+        settings.client.channels.cache.get(logChannelId).send({embeds: [new Discord.EmbedBuilder().setDescription(text)]});
     }
 };
 
 module.exports.sendMessage = (channelId, text) => {
-    settings.client.channels.cache.get(channelId).send(new Discord.MessageEmbed().setDescription(text));
+    settings.client.channels.cache.get(channelId).send({embeds: [new Discord.EmbedBuilder().setDescription(text)]});
 };
 
 module.exports.sendMessage = (channelId, text, attachments) => {
-    settings.client.channels.cache.get(channelId).send({embed: new Discord.MessageEmbed().setDescription(text), files: attachments});
+    settings.client.channels.cache.get(channelId).send({embeds: [new Discord.EmbedBuilder().setDescription(text)], files: attachments});
 };
 
 module.exports.sendEmbed = (channelId, embed) => {

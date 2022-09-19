@@ -19,7 +19,6 @@ module.exports.client = client;
 
 const defaults = require('./serverDefaultSettings.json');
 const utils = require('../utils/utils');
-const {IntentsBitField} = require("discord.js");
 let serverSettings = {};
 
 module.exports.init = async () => {
