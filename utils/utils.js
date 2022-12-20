@@ -171,7 +171,7 @@ module.exports.sendMessage = (channelId, text, attachments) => {
 };
 
 module.exports.sendEmbed = (channelId, embed) => {
-    settings.client.channels.cache.get(channelId).send(embed);
+    settings.client.channels.cache.get(channelId).send({embeds: [embed]});
 };
 
 module.exports.getUsersCurrency = async (userId) => {

@@ -1,4 +1,5 @@
 const utils = require('../utils/utils');
+const Discord = require("discord.js");
 
 module.exports.execute = async (parsedMessage, message, database) => {
     const snapshot = await database.collection('users').get();
@@ -27,5 +28,5 @@ module.exports.execute = async (parsedMessage, message, database) => {
 
     console.log(finalText);
 
-    message.channel.send(utils.createSuccessEmbed(finalText));
+    utils.sendEmbed(message.channel.id, new Discord.EmbedBuilder().setDescription(finalText).setTitle("Leaderboard"));
 };
